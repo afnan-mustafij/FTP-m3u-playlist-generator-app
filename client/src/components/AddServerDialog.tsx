@@ -105,8 +105,6 @@ export default function AddServerDialog() {
                     <Input
                       placeholder="ftp.example.com"
                       {...field}
-                      readOnly
-                      className="bg-gray-50"
                     />
                   </FormControl>
                   <FormMessage />
@@ -125,8 +123,6 @@ export default function AddServerDialog() {
                       <Input
                         type="number"
                         {...field}
-                        readOnly
-                        className="bg-gray-50"
                       />
                     </FormControl>
                     <FormMessage />
