@@ -10,6 +10,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Server name is required" }),
@@ -57,148 +64,137 @@ export default function AddServerDialog() {
     await saveServer(values);
   };
   
-  if (!addServerDialogOpen) {
-    return null;
-  }
-  
   return (
-    <div className="fixed inset-0 z-30" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="text-lg font-medium text-gray-800">Save FTP Server</h3>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setAddServerDialogOpen(false)}
-            >
+    <Dialog open={addServerDialogOpen} onOpenChange={setAddServerDialogOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Save FTP Server</DialogTitle>
+          <DialogClose asChild>
+            <Button variant="ghost" size="sm" className="absolute right-4 top-4">
               <X className="h-5 w-5" />
             </Button>
-          </div>
-          
-          <div className="p-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Server Name</FormLabel>
+          </DialogClose>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Server Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="My Media Server" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="host"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>FTP Host</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="ftp.example.com"
+                      {...field}
+                      readOnly
+                      className="bg-gray-50"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="port"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Port</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        readOnly
+                        className="bg-gray-50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="icon"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Icon</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
-                        <Input placeholder="My Media Server" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an icon" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="host"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>FTP Host</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="ftp.example.com"
-                          {...field}
-                          readOnly
-                          className="bg-gray-50"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="port"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Port</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            readOnly
-                            className="bg-gray-50"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="icon"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Icon</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select an icon" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="storage">Storage</SelectItem>
-                            <SelectItem value="movie">Movies</SelectItem>
-                            <SelectItem value="tv">TV Shows</SelectItem>
-                            <SelectItem value="music">Music</SelectItem>
-                            <SelectItem value="cloud">Cloud</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <FormField
-                  control={form.control}
-                  name="savePassword"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Save password
-                        </FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="flex justify-end space-x-3 pt-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setAddServerDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    Save Server
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </div>
-      </div>
-    </div>
+                      <SelectContent>
+                        <SelectItem value="storage">Storage</SelectItem>
+                        <SelectItem value="movie">Movies</SelectItem>
+                        <SelectItem value="tv">TV Shows</SelectItem>
+                        <SelectItem value="music">Music</SelectItem>
+                        <SelectItem value="cloud">Cloud</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <FormField
+              control={form.control}
+              name="savePassword"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      Save password
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+            
+            <div className="flex justify-end space-x-3 pt-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setAddServerDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">
+                Save Server
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }
