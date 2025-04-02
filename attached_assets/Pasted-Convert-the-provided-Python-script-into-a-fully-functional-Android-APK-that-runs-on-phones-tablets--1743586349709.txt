@@ -1,0 +1,56 @@
+Convert the provided Python script into a fully functional Android APK that runs on phones, tablets, and TVs, with a GitHub-based build process (not local). Follow these requirements:
+
+1. Technology Stack
+Use React Native for the frontend (with Expo or React Native CLI).
+
+Use FastAPI or Flask as a lightweight Python backend, containerized using Docker for easy deployment.
+
+Host the backend on a free-tier cloud service (e.g., Render, Railway, or Fly.io) to allow seamless data processing.
+
+2. File Handling & Storage
+Replace the Windows roaming AppData logic with Android-compatible local storage using AsyncStorage (React Native) or SQLite/JSON-based storage.
+
+Ensure users can save/load data persistently across app sessions.
+
+Implement file picker functionality to allow users to specify a save location for the generated M3U playlist.
+
+3. Features & Functionality
+Maintain all core functionalities of the script, including FTP media file scraping and M3U playlist generation.
+
+Provide a user-friendly UI that allows users to:
+
+Enter FTP credentials.
+
+Browse directories and select media files.
+
+Generate and save M3U playlists.
+
+Organize links into seasons/episodes if applicable.
+
+4. GitHub CI/CD Build Process
+Set up a GitHub Actions workflow that automates APK builds and releases.
+
+Use EAS (Expo Application Services) or React Native CLI for building.
+
+Ensure the final APK is available for download in GitHub Releases after each commit.
+
+5. Android Compatibility
+Ensure support for phones, tablets, and TVs using responsive UI design.
+
+Implement TV remote navigation support with React Native’s useTVEventHandler().
+
+6. Alternative Packaging (if needed)
+If React Native doesn’t fit, consider using Flutter or a pure Kivy-based Android build (with Termux and GitHub Actions).
+
+7. Additional Enhancements
+Improve performance for large FTP directories by implementing background processing.
+
+Ensure smooth UX with loading indicators and progress updates.
+
+Deliverables:
+A GitHub repository with clean, modular code.
+
+A GitHub Actions CI/CD setup for automated APK builds.
+
+A fully working APK file ready for installation.
+
