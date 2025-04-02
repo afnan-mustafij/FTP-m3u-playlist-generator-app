@@ -1,0 +1,8 @@
+{
+  "appId": "com.m3ugenerator.app",
+  "appName": "FTP M3U Generator",
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -337,10 +337,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setPlaylists([...playlists, newPlaylist]);
         setGeneratePlaylistDialogOpen(false);
         
-        toast({
-          title: "Playlist Created",
-          description: `"${newPlaylist.name}" has been generated and saved`
-        });
+        // If this is a mobile device and saveToDevice is true, use native functionality
+        if (params.saveToDevice) {
+          try {
+            // Import dynamically to avoid loading on web
+            const { NativeFilesystem } = await import('../lib/nativeFilesystem');
+            
+            await NativeFilesystem.saveFile(
+              newPlaylist.content,
+              `${newPlaylist.name}.m3u`,
+              'Downloads'
+            );
+            
+            toast({
+              title: "Playlist Created",
+              description: `"${newPlaylist.name}" has been generated and saved to your device`
+            });
+          } catch (saveError) {
+            console.error('Error saving to device:', saveError);
+            toast({
+              title: "Playlist Created",
+              description: `"${newPlaylist.name}" has been generated but could not be saved to your device`
+            });
+          }
+        } else {
+          toast({
+            title: "Playlist Created",
+            description: `"${newPlaylist.name}" has been generated and saved`
+          });
+        }
       }
     } catch (error) {
       toast({

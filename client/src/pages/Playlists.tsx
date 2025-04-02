@@ -33,20 +33,40 @@ export default function Playlists() {
     try {
       const response = await fetch(`/api/playlists/${id}/download`);
       if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `${name}.m3u`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
+        const content = await response.text();
         
-        toast({
-          title: "Download Started",
-          description: `${name}.m3u is being downloaded`
-        });
+        // Check if we're on mobile and can use native file system
+        try {
+          // Import dynamically to avoid loading on web
+          const { NativeFilesystem } = await import('../lib/nativeFilesystem');
+          
+          await NativeFilesystem.saveFile(
+            content,
+            `${name}.m3u`,
+            'Downloads'
+          );
+          
+          toast({
+            title: "Download Complete",
+            description: `${name}.m3u has been saved to your device`
+          });
+        } catch (mobileError) {
+          // Fallback to browser download
+          const blob = new Blob([content], { type: 'text/plain' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = `${name}.m3u`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          
+          toast({
+            title: "Download Started",
+            description: `${name}.m3u is being downloaded`
+          });
+        }
       } else {
         throw new Error("Failed to download");
       }
