@@ -2,7 +2,6 @@ import React from 'react';
 import { useAppContext } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,7 +9,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 const formSchema = z.object({
   ftpHost: z.string().min(1, { message: "FTP host is required" }),
-  ftpPort: z.coerce.number().int().positive().default(21),
   ftpUsername: z.string().default("anonymous"),
   ftpPassword: z.string().optional()
 });
@@ -19,8 +17,6 @@ export default function ServerConnectionPanel() {
   const { 
     ftpHost, 
     setFtpHost, 
-    ftpPort, 
-    setFtpPort, 
     ftpUsername, 
     setFtpUsername, 
     ftpPassword, 
@@ -34,7 +30,6 @@ export default function ServerConnectionPanel() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ftpHost: ftpHost,
-      ftpPort: ftpPort,
       ftpUsername: ftpUsername,
       ftpPassword: ftpPassword
     }
@@ -43,26 +38,23 @@ export default function ServerConnectionPanel() {
   // Update form when activeServer changes
   React.useEffect(() => {
     if (activeServer) {
-      // Type assertion to handle null as empty string
-      const password = activeServer.password === null ? "" : activeServer.password;
+      // Handle null/undefined password
+      const password = activeServer.password ? activeServer.password : "";
       
       form.reset({
         ftpHost: activeServer.host,
-        ftpPort: activeServer.port,
-        ftpUsername: activeServer.username,
+        ftpUsername: activeServer.username || "",
         ftpPassword: password
       });
       
       setFtpHost(activeServer.host);
-      setFtpPort(activeServer.port);
-      setFtpUsername(activeServer.username);
+      setFtpUsername(activeServer.username || "");
       setFtpPassword(password);
     }
-  }, [activeServer, form, setFtpHost, setFtpPort, setFtpUsername, setFtpPassword]);
+  }, [activeServer, form, setFtpHost, setFtpUsername, setFtpPassword]);
   
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setFtpHost(values.ftpHost);
-    setFtpPort(values.ftpPort);
     setFtpUsername(values.ftpUsername);
     setFtpPassword(values.ftpPassword || "");
     
@@ -81,29 +73,10 @@ export default function ServerConnectionPanel() {
               name="ftpHost"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>FTP Host</FormLabel>
+                  <FormLabel>FTP Server</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="ftp.example.com" 
-                      {...field}
-                      tabIndex={0}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="ftpPort"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Port</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="21" 
                       {...field}
                       tabIndex={0}
                     />
@@ -135,7 +108,7 @@ export default function ServerConnectionPanel() {
               control={form.control}
               name="ftpPassword"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input 

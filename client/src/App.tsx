@@ -18,7 +18,7 @@ import { AppProvider } from "./contexts/AppContext";
 import AddServerDialog from "./components/AddServerDialog";
 import GeneratePlaylistDialog from "./components/GeneratePlaylistDialog";
 
-function AppLayout({ children }: { children: React.ReactNode }) {
+function AppContent() {
   const isMobile = useIsMobile();
   const { mobileDrawerOpen } = useAppContext();
 
@@ -31,7 +31,23 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         {isMobile && mobileDrawerOpen && <MobileDrawer />}
         
         <main className="flex-1 overflow-y-auto bg-background mobile-custom-height md:h-[calc(100vh-64px)]">
-          {children}
+          <Switch>
+            <Route path="/">
+              <Home />
+            </Route>
+            <Route path="/servers">
+              <Servers />
+            </Route>
+            <Route path="/playlists">
+              <Playlists />
+            </Route>
+            <Route path="/settings">
+              <Settings />
+            </Route>
+            <Route>
+              <NotFound />
+            </Route>
+          </Switch>
         </main>
       </div>
       
@@ -43,37 +59,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Router() {
-  return (
-    <AppProvider>
-      <AppLayout>
-        <Switch>
-          <Route path="/">
-            <Home />
-          </Route>
-          <Route path="/servers">
-            <Servers />
-          </Route>
-          <Route path="/playlists">
-            <Playlists />
-          </Route>
-          <Route path="/settings">
-            <Settings />
-          </Route>
-          <Route>
-            <NotFound />
-          </Route>
-        </Switch>
-      </AppLayout>
-    </AppProvider>
-  );
-}
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <AppProvider>
+        <AppContent />
+        <Toaster />
+      </AppProvider>
     </QueryClientProvider>
   );
 }

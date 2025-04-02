@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { FtpServer, Playlist, MediaFile, SearchParams } from "@shared/schema";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
 interface AppContextType {
@@ -60,7 +60,6 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const { toast } = useToast();
   
   // UI State
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -267,8 +266,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const uniqueSeasons = Array.from(
           new Set(
             results
-              .map(file => file.season)
-              .filter(season => season !== null)
+              .map((file: MediaFile) => file.season)
+              .filter((season: number | null) => season !== null)
           )
         ).sort((a, b) => (a as number) - (b as number));
         
@@ -297,7 +296,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
   
-  const generatePlaylist = async (params) => {
+  const generatePlaylist = async (params: {
+    name: string;
+    description?: string;
+    groupTitle: string;
+    organizeBySeasons: boolean;
+    sortNumerically: boolean;
+    saveToDevice: boolean;
+  }) => {
     if (currentSearchResults.length === 0) {
       toast({
         title: "Error",
